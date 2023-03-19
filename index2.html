@@ -521,7 +521,7 @@
             <h1 class="line-1 anim-typewriter">Realtime Chat</h1>
             <div class="form-group">
                 <span id="domain">site.com/</span>
-                <input class="form-field" maxlength="14" type="text" id="input" placeholder="link" />
+                <input class="form-field" maxlength="14" type="text" id="input"  placeholder="link" />
             </div>
             <div class="buttons">
                 <button id="copy-btn" onclick="copyLink()">Копировать</button>
@@ -543,9 +543,16 @@
 
             $('#input').keyup(checkInput);
             $('#input').change(checkInput);
+
+            var wrongWords = [
+                "admin",
+                 "000", 
+                 "123",
+                 "111"
+                  ];
             
             function checkInput() {
-                if($('#input').val().length >= 3) {
+                if($('#input').val().length >= 3 && wrongWords.indexOf($('#input').val()) == -1) {
                     $('#open-btn').prop('disabled', false);
                     $('#copy-btn').prop('disabled', false);
                 } else {
