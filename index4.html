@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="apple-touch-icon" type="image/png" href="https://cpwebassets.codepen.io/assets/favicon/apple-touch-icon-5ae1a0698dcc2402e9712f7d01ed509a57814f994c660df9f7a952f3060705ee.png" />
+
+        <meta name="apple-mobile-web-app-title" content="CodePen" />
+
+        <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
+
+        <link rel="mask-icon" type="image/x-icon" href="https://cpwebassets.codepen.io/assets/favicon/logo-pin-b4b4269c16397ad2f0f7a01bcdf513a1994f4c94b8af2f191c09eb0d601762b1.svg" color="#111" />
+
+        <title>Realtime Chat</title>
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap" rel="stylesheet" />
+
+        <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+        <style>
+            html {
+                overflow: hidden;
+            }
+
+            :root {
+                --input-color: #00ffc2;
+                --input-border: #cdd9ed;
+                --input-background: #fff;
+                --input-placeholder: #7a7a7a;
+                --input-border-focus: #27fecc;
+                --group-color: var(--input-color);
+                --group-border: var(--input-border);
+                --group-background: #222222;
+                --group-color-focus: #fff;
+                --group-border-focus: var(--input-border-focus);
+                --group-background-focus: #018767;
+            }
+
+            h1 {
+                font-size: 48px;
+                margin-bottom: 40px;
+                color: #fff;
+            }
+
+            a {
+                color: #fff;
+            }
+
+            .form-field {
+                display: block;
+                width: 100%;
+                padding: 8px 16px;
+                line-height: 25px;
+                font-size: 15px;
+                font-weight: 500;
+                font-family: inherit;
+                border-radius: 6px;
+                -webkit-appearance: none;
+                color: white;
+                border: 1px solid var(--input-border);
+                background: #333;
+                transition: border 0.3s ease;
+            }
+            .form-field::-moz-placeholder {
+                color: var(--input-placeholder);
+            }
+            .form-field:-ms-input-placeholder {
+                color: var(--input-placeholder);
+            }
+            .form-field::placeholder {
+                color: var(--input-placeholder);
+            }
+            .form-field:focus {
+                outline: none;
+                border-color: var(--input-border-focus);
+            }
+
+            .form-group {
+                position: relative;
+                display: flex;
+                width: 100%;
+            }
+            .form-group > span,
+            .form-group .form-field {
+                white-space: nowrap;
+                display: block;
+            }
+            .form-group > span:not(:first-child):not(:last-child),
+            .form-group .form-field:not(:first-child):not(:last-child) {
+                border-radius: 0;
+            }
+            .form-group > span:first-child,
+            .form-group .form-field:first-child {
+                border-radius: 6px 0 0 6px;
+            }
+            .form-group > span:last-child,
+            .form-group .form-field:last-child {
+                border-radius: 0 6px 6px 0;
+            }
+            .form-group > span:not(:first-child),
+            .form-group .form-field:not(:first-child) {
+                margin-left: -1px;
+            }
+            .form-group .form-field {
+                position: relative;
+                z-index: 1;
+                flex: 1 1 auto;
+                width: 1%;
+                margin-top: 0;
+                margin-bottom: 0;
+            }
+            .form-group > span {
+                text-align: center;
+                padding: 8px 12px;
+                font-size: 16px;
+                line-height: 25px;
+                color: var(--group-color);
+                background: var(--group-background);
+                border: 1px solid var(--group-border);
+                transition: background 0.3s ease, border 0.3s ease, color 0.3s ease;
+            }
+            .form-group:focus-within > span {
+                color: var(--group-color-focus);
+                background: var(--group-background-focus);
+                border-color: var(--group-border-focus);
+            }
+
+            html {
+                box-sizing: border-box;
+                -webkit-font-smoothing: antialiased;
+            }
+
+            * {
+                box-sizing: inherit;
+            }
+            *:before,
+            *:after {
+                box-sizing: inherit;
+            }
+
+            body {
+                min-height: 100vh;
+                font-family: "Roboto", sans-serif;
+                /* font-family: "Mukta Malar", Arial; */
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                flex-direction: column;
+                background: #333;
+                overflow: hidden;
+            }
+            body .form-group {
+                max-width: 430px;
+            }
+            body .form-group:not(:last-child) {
+                margin-bottom: 32px;
+            }
+
+            .buttons {
+                font-family: "Roboto", sans-serif;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-bottom: 40px;
+                outline: none;
+
+            }
+
+            .container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                height: 100vh;
+                /* margin: 40px; */
+            }
+
+            button {
+                font-family: "Roboto", sans-serif;
+                position: relative;
+                display: inline-block;
+                padding: 10px 20px;
+                margin-right: 20px;
+                border: none;
+                border-radius: 50px;
+                background-color: #1a1a1a;
+                color: #fff;
+                font-size: 18px;
+                cursor: pointer;
+                opacity: 1;
+                transition: opacity 0.3s ease-out 0.1s, background-color 0.1s ease-out, color 0.1s ease-out, box-shadow 0.1s ease-out;
+            }
+
+            button.show {
+                opacity: 0;
+            }
+
+
+            button:hover:not(:disabled)  {
+                background-color: #27fecc;
+                color: #1a1a1a;
+                box-shadow: 0 0 15px 0px #27fecc;
+            }
+
+            button:active:not(:disabled)  {
+                background-color: #0d0d0d;
+                color: #ccc;
+                box-shadow: none;
+            }
+
+            #copy-btn:hover:active(:disabled)  {
+                background-color: #131010;
+                color: #f4f4f4;
+            }
+
+            #open-btn:hover:active:not(:disabled) {
+                background-color: #000000;
+                color: #f4f4f4;
+            }
+
+            #copy-btn:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+                background: #585858;
+            }
+
+            #open-btn:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+                background: #585858;
+            }
+
+            #generate-btn:hover:active {
+                background-color: #000000;
+                color: #f4f4f4;
+                font-family: Roboto;
+            }
+            .telegram-link {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #fff;
+            }
+
+            .telegram-link img {
+                width: 24px;
+                height: 24px;
+                margin-right: 10px;
+                cursor: pointer;
+            }
+            footer {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            }
+            .copyright {
+                color: #f4f4f4;
+                padding: 15px;
+                display: flex;
+                justify-content: center !important;
+
+            }
+
+            @media screen and (max-width: 414px) {
+                .buttons {
+                    display: inline-grid;
+                }
+
+                .telegram-link {
+                    margin-left: 28px;
+                    margin: 0 auto;
+                }
+
+                .input-field {
+                    width: 90%;
+                    margin: 10px 5%;
+                    font-size: 14px;
+                }
+
+                .generate-button {
+                    width: 70%;
+                    margin: 10px 15%;
+                    font-size: 14px;
+                }
+                body .form-group:not(:last-child) {
+                    margin-bottom: 32px;
+                    width: 260px;
+                    margin-right: -15px;
+                }
+                button {
+                    margin-bottom: 4px;
+                    width: 100%;
+                    margin: 10px 5%;
+                    font-size: 22px;
+                }
+                footer {
+                position: fixed;
+                left: 0;
+                bottom: 0;
+                width: 100%;
+            }
+            .copyright {
+                color: #f4f4f4;
+                padding: 15px;
+                display: flex;
+                justify-content: flex-start;
+                }
+            }
+
+            @media screen and (max-width: 390px) {
+                .buttons {
+                    display: inline-grid;
+                }
+
+                .telegram-link {
+                    margin: 0 auto;
+                }
+
+                .input-field {
+                    width: 90%;
+                    margin: 10px 5%;
+                    font-size: 14px;
+                }
+
+                .generate-button {
+                    width: 70%;
+                    margin: 10px 15%;
+                    font-size: 14px;
+                }
+                body .form-group:not(:last-child) {
+                    margin-bottom: 32px;
+                    width: 260px;
+                    margin-right: -15px;
+                }
+                button {
+                    margin-bottom: 4px;
+                    width: 100%;
+                    margin: 10px 5%;
+                    font-size: 22px;
+                }
+                .copyright {
+                color: #f4f4f4;
+                padding: 15px;
+                display: flex;
+                justify-content: flex-start;
+                }
+            }
+
+            @media screen and (max-width: 375px) {
+                .buttons {
+                    display: inline-grid;
+                }
+
+                .telegram-link {
+                    margin-left: 28px;
+                    margin: 0 auto;
+                }
+
+                .input-field {
+                    width: 90%;
+                    margin: 10px 5%;
+                    font-size: 14px;
+                }
+
+                .generate-button {
+                    width: 70%;
+                    margin: 10px 15%;
+                    font-size: 14px;
+                }
+                body .form-group:not(:last-child) {
+                    margin-bottom: 32px;
+                    width: 260px;
+                    margin-right: -15px;
+                }
+                button {
+                    margin-bottom: 4px;
+                    width: 100%;
+                    margin: 10px 5%;
+                    font-size: 22px;
+                }
+                .copyright {
+                color: #f4f4f4;
+                padding: 15px;
+                display: flex;
+                justify-content: flex-start;
+                }
+            }
+
+            @media screen and (max-width: 320px) {
+                .buttons {
+                    display: inline-grid;
+                }
+
+                .telegram-link {
+                    margin-left: 28px;
+                    margin: 0 auto;
+                }
+
+                .input-field {
+                    width: 90%;
+                    margin: 10px 5%;
+                    font-size: 14px;
+                }
+
+                .generate-button {
+                    width: 70%;
+                    margin: 10px 15%;
+                    font-size: 14px;
+                }
+                body .form-group:not(:last-child) {
+                    margin-bottom: 32px;
+                    width: 260px;
+                    margin-right: -15px;
+                }
+                button {
+                    margin-bottom: 4px;
+                    width: 100%;
+                    margin: 10px 5%;
+                    font-size: 22px;
+                }
+                .copyright {
+                color: #f4f4f4;
+                padding: 15px;
+                display: flex;
+                justify-content: flex-start;
+                }
+            }
+
+            @media screen and (max-width: 280px) {
+                .line-1 {
+                    font-size: 40px;
+                }
+                
+                .buttons {
+                    display: inline-grid;
+                }
+
+                .telegram-link {
+                    margin-left: 28px;
+                    margin: 0 auto;
+                }
+
+                .input-field {
+                    width: 90%;
+                    margin: 10px 5%;
+                    font-size: 14px;
+                }
+
+                .generate-button {
+                    width: 70%;
+                    margin: 10px 15%;
+                    font-size: 14px;
+                }
+                body .form-group:not(:last-child) {
+                    margin-bottom: 32px;
+                    width: 260px;
+                    margin-right: -15px;
+                }
+                button {
+                    margin-bottom: 4px;
+                    width: 100%;
+                    margin: 10px 5%;
+                    font-size: 22px;
+                }
+                .copyright {
+                color: #f4f4f4;
+                padding: 15px;
+                display: flex;
+                justify-content: flex-start;
+                }
+            }
+
+            .line-1 {
+                width: 14em;
+                text-align: center;
+                white-space: nowrap;
+                overflow: hidden;
+                transform: translateY(-50%);
+                margin: 10px;
+            }
+
+            /* Animation */
+            .anim-typewriter {
+                animation: typewriter 0s steps(44) 0s 1 normal both, blinkTextCursor 900ms steps(44) infinite normal;
+            }
+            @keyframes typewriter {
+                from {
+                    width: 0;
+                }
+                to {
+                    width: 24em;
+                }
+            }
+            @keyframes blinkTextCursor {
+                from {
+                    border-right-color: rgba(255, 255, 255, 0.75);
+                }
+                to {
+                    border-right-color: transparent;
+                }
+            }
+
+            .copyright {
+                text-align: center;
+            }
+        </style>
+
+        <script>
+            window.console = window.console || function (t) {};
+        </script>
+
+        <script>
+            if (document.location.search.match(/type=embed/gi)) {
+                window.parent.postMessage("resize", "*");
+            }
+        </script>
+    </head>
+
+    <body translate="no">
+        <div class="container">
+            <h1 class="line-1 anim-typewriter">Realtime Chat</h1>
+            <div class="form-group">
+                <span id="domain">site.com/</span>
+                <input class="form-field" maxlength="14" type="text" id="input"  placeholder="link" />
+            </div>
+            <div class="buttons">
+                <button id="copy-btn" onclick="copyLink()" onblur="this.blur()">Копировать</button>
+                <button id="open-btn" onblur="this.blur()">Открыть</button>
+                <button id="generate-btn" onblur="this.blur()">Генерировать</button>
+            </div>
+            <div class="telegram-link">
+                <a href="https://t.me/nameapp" target="_blank"><img src="telegram.svg" alt="telegram" /></a>
+                <a href="https://t.me/nameapp" target="_blank" style="margin: 0 auto;!important"><p style="margin: 0; padding: 0;">Посетите наш канал в Telegram</p></a>
+            </div>
+            <footer>
+                <p class="copyright">&copy; 2023 Realtime Chat. All rights reserved.</p>
+            </footer>
+        </div>
+        <script>
+            var input = document.getElementById("input");
+            var submitButton = document.getElementById("open-btn");
+
+
+            $('#input').keyup(checkInput);
+            $('#input').change(checkInput);
+
+            var wrongWords = [
+                "admin",
+                 "000", 
+                 "123",
+                 "111"
+                  ];
+            
+            function checkInput() {
+                if($('#input').val().length >= 3 && wrongWords.indexOf($('#input').val()) == -1) {
+                    $('#open-btn').prop('disabled', false);
+                    $('#copy-btn').prop('disabled', false);
+                } else {
+                    $('#open-btn').prop('disabled', true);
+                    $('#copy-btn').prop('disabled', true);
+                }
+            }
+
+            var input = document.getElementById("input");
+            input.addEventListener("input", function () {
+                this.value = this.value.replace(/[^A-Za-z0-9]/g, "");
+            });
+
+            var input = document.getElementById("input").value;
+            var regex = /^[A-Za-z0-9]{3,14}$/;
+            if (regex.test(input)) {
+                console.log("Input is valid");
+            } else {
+                console.log("Input is invalid");
+            }
+
+            function copyLink() {
+                const input = document.getElementById("input");
+                const domain = document.getElementById("domain");
+
+                const copyText = document.createElement("textarea");
+                copyText.value = "https://" + domain.innerText + input.value;
+                document.body.appendChild(copyText);
+
+                copyText.select();
+                copyText.setSelectionRange(0, 99999);
+                document.execCommand("copy");
+
+                document.body.removeChild(copyText);
+            }
+
+            let generatedLink = "";
+
+            function generateLink() {
+                const chars = Array.from({ length: 26 }, (_, i) => String.fromCharCode(97 + i));
+                const randomStr = Array.from({ length: 5 }, () => chars[Math.floor(Math.random() * 26)]).join("");
+                generatedLink = "" + randomStr;
+                document.getElementById("input").value = generatedLink;
+                checkInput();
+            }
+
+            // function openLink() {
+            //     if (generatedLink) {
+            //         window.open("https://site.com/" + generatedLink);
+            //     }
+            // }
+               function openLink() {
+                const input = document.getElementById("input");
+                const domain = document.getElementById("domain");
+
+                window.open( "https://" + domain.innerText + input.value);
+
+            }
+
+            generateLink();
+
+            document.getElementById("generate-btn").addEventListener("click", generateLink);
+            document.getElementById("open-btn").addEventListener("click", openLink);
+        </script>
+    </body>
+</html>
