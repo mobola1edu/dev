@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Public base API url:login:pass</title>
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet"> 
-    <style>
-        body {
-            font-family: 'Open Sans', sans-serif;
-            overflow: hidden;
-        }
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Public base API url:login:pass</title>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+<style>
+    body {
+        font-family: 'Open Sans', sans-serif;
+        overflow: hidden;
+    }
 
     .container {
         display: flex;
@@ -37,12 +37,16 @@
         display: block;
     }
 
+    .button-container {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+    }
+
     button {
         padding: 10px 20px;
         font-size: 1.5rem;
         cursor: pointer;
-        margin: 0 auto;
-        display: block;
     }
 
     button:disabled {
@@ -90,6 +94,7 @@
         var apiKeyInput = document.querySelector('input[name="apikey"]');
         var wordInput = document.querySelector('input[name="word"]');
         var searchButton = document.getElementById('searchButton');
+        var stopButton = document.getElementById('stopButton');
         
         function checkInputs() {
             if (apiKeyInput.value && wordInput.value) {
@@ -110,6 +115,8 @@
             searchButton.innerText = "Loading";
             searchButton.classList.add('loading');
             
+            stopButton.style.display = "block"; // Show the stop button
+
             setTimeout(function() {
                 var searchForm = document.getElementById('searchForm');
                 searchForm.action = "https://api.topchek.dev/";
@@ -129,22 +136,55 @@
                 searchForm.submit();
             }, 1000);
         });
+
+        stopButton.addEventListener('click', function(event) {
+            event.preventDefault();
+
+            // Reset the form to its initial state
+            searchButton.disabled = false;
+            apiKeyInput.disabled = false;
+            wordInput.disabled = false;
+            searchButton.innerText = "Find";
+            searchButton.classList.remove('loading');
+            stopButton.style.display = "none"; // Hide the stop button
+        });
         
         checkInputs();
     });
 </script>
 </head>
 <body>
-    <div class="container">
-        <h1>Public base</h1>
-        <form id="searchForm" action="https://api.topchek.dev/" method="get">
-            <a href="https://t.me/TOPCHEKK">Buy access</a>
-            <a href="https://t.me/Rapiulp">Telegram channel</a>
-            <input type="text" name="apikey" placeholder="API-key" required>
-            <input type="text" name="word" placeholder="Request (site.com/keyword/user@email.com/password)" required>
-            <button id="searchButton" type="submit" disabled>Find</button>
-            <div class="text-after-button">Lines: 26774009</div>
-        </form>
-    </div>
+<div class="container">
+<h1>Public base</h1>
+<form id="searchForm" action="https://api.topchek.dev/" method="get">
+<a href="https://t.me/TOPCHEKK">Buy access</a>
+<a href="https://t.me/Rapiulp">Telegram channel</a>
+<input type="text" name="apikey" placeholder="API-key" required>
+<input type="text" name="word" placeholder="Request (site.com/keyword/user@email.com/password)" required>
+<div class="button-container">
+    <button id="searchButton" type="submit" disabled>Find</button>
+    <button id="stopButton" type="button" style="display: none;">Stop</button> <!-- New stop button -->
+</div>
+<div class="text-after-button">Lines: <span id="linesValue"></span></div>
+
+<script>
+  // Создаем объект XMLHttpRequest
+  var xhttp = new XMLHttpRequest();
+
+  // Устанавливаем функцию, которая будет вызвана при изменении состояния запроса
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      // При успешном выполнении запроса обновляем значение внутри тега <span>
+      document.getElementById("linesValue").textContent = this.responseText;
+    }
+  };
+
+  // Отправляем GET-запрос на файл lines.txt
+  xhttp.open("GET", "lines.txt", true);
+  xhttp.send();
+</script>
+
+</form>
+</div>
 </body>
 </html>
