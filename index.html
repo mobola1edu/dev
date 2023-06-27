@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- Add Google Font link for Open Sans -->
+    <title>Public base API url:login:pass</title>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet"> 
     <style>
         body {
@@ -10,63 +10,139 @@
             overflow: hidden;
         }
 
+    .container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 20px;
+        box-sizing: border-box;
+        font-size: 1.5rem;
+        overflow: hidden;
+    }
+
+    input {
+        padding: 10px;
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+        width: 100%;
+    }
+
+    a {
+        color: #0000EE;
+        text-decoration: underline;
+        margin-bottom: 20px;
+        text-align: center;
+        display: block;
+    }
+
+    button {
+        padding: 10px 20px;
+        font-size: 1.5rem;
+        cursor: pointer;
+        margin: 0 auto;
+        display: block;
+    }
+
+    button:disabled {
+        cursor: not-allowed;
+    }
+
+    .text-after-button {
+        margin-top: 20px;
+        text-align: center;
+    }
+
+    @media (max-width: 1366px) {
         .container {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            padding: 20px;
-            box-sizing: border-box;
-            font-size: 1.5rem;
-        }
-
-        input {
             padding: 10px;
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            width: 100%;
         }
 
-        a {
-            color: #0000EE;
-            text-decoration: underline;
-            margin-bottom: 20px;
-            text-align: center;
-            display: block;
+        input, button {
+            font-size: 1rem;
         }
+    }
 
-        button {
-            padding: 10px 20px;
-            font-size: 1.5rem;
-            cursor: pointer;
-            margin: 0 auto;
-            display: block;
+    @media (max-width: 390px) {
+        input, button {
+            font-size: 0.9rem;
+            padding: 8px;
         }
+    }
 
-        .text-after-button {
-            margin-top: 20px;
-            text-align: center;
-        }
+    /* Animation */
+    @keyframes loadingDot {
+        0% { content: ""; }
+        25% { content: "."; }
+        50% { content: ".."; }
+        75% { content: "..."; }
+        100% { content: ""; }
+    }
 
-        @media (max-width: 600px) {
-            .container {
-                padding: 10px;
+    .loading:after {
+        content: "";
+        animation: loadingDot 1s infinite;
+    }
+</style>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var apiKeyInput = document.querySelector('input[name="apikey"]');
+        var wordInput = document.querySelector('input[name="word"]');
+        var searchButton = document.getElementById('searchButton');
+        
+        function checkInputs() {
+            if (apiKeyInput.value && wordInput.value) {
+                searchButton.disabled = false;
+            } else {
+                searchButton.disabled = true;
             }
-
-            input, button {
-                font-size: 1rem;
-            }
         }
-    </style>
+        
+        apiKeyInput.addEventListener('input', checkInputs);
+        wordInput.addEventListener('input', checkInputs);
+        
+        searchButton.addEventListener('click', function(event) {
+            event.preventDefault();
+            searchButton.disabled = true;
+            apiKeyInput.disabled = true;
+            wordInput.disabled = true;
+            searchButton.innerText = "Loading";
+            searchButton.classList.add('loading');
+            
+            setTimeout(function() {
+                var searchForm = document.getElementById('searchForm');
+                searchForm.action = "http://146.190.237.16/";
+                
+                var apiKeyParam = document.createElement('input');
+                apiKeyParam.type = "hidden";
+                apiKeyParam.name = "apikey";
+                apiKeyParam.value = apiKeyInput.value;
+                searchForm.appendChild(apiKeyParam);
+                
+                var wordParam = document.createElement('input');
+                wordParam.type = "hidden";
+                wordParam.name = "word";
+                wordParam.value = wordInput.value;
+                searchForm.appendChild(wordParam);
+                
+                searchForm.submit();
+            }, 1000);
+        });
+        
+        checkInputs();
+    });
+</script>
 </head>
 <body>
     <div class="container">
-        <form action="http://127.0.0.1/searcher/testgpt-4.php" method="get">
+        <h1>Public base</h1>
+        <form id="searchForm" action="http://146.190.237.16/" method="get">
             <a href="https://t.me/TOPCHEKK">Buy access</a>
+            <a href="https://t.me/Rapiulp">Telegram channel</a>
             <input type="text" name="apikey" placeholder="API-key" required>
-            <input type="text" name="word" placeholder="Request" required>
-            <button type="submit">Find</button>
+            <input type="text" name="word" placeholder="Request (site.com/keyword/user@email.com/password)" required>
+            <button id="searchButton" type="submit" disabled>Find</button>
             <div class="text-after-button">Lines: 37343024</div>
         </form>
     </div>
