@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Private base API url:login:pass</title>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+<style>
+    body {
+        font-family: 'Open Sans', sans-serif;
+        overflow: hidden;
+    }
+
+    .container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 20px;
+        box-sizing: border-box;
+        font-size: 1.5rem;
+        overflow: hidden;
+    }
+
+    input {
+        padding: 10px;
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+        width: 100%;
+    }
+
+    a {
+        color: #0000EE;
+        text-decoration: underline;
+        margin-bottom: 20px;
+        text-align: center;
+        display: block;
+    }
+
+    .button-container {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+    }
+
+    button {
+        padding: 10px 20px;
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
+
+    button:disabled {
+        cursor: not-allowed;
+    }
+
+    .text-after-button {
+        margin-top: 20px;
+        text-align: center;
+    }
+
+    @media (max-width: 1366px) {
+        .container {
+            padding: 10px;
+        }
+
+        input, button {
+            font-size: 1rem;
+        }
+    }
+
+    @media (max-width: 390px) {
+        input, button {
+            font-size: 0.9rem;
+            padding: 8px;
+        }
+    }
+
+    /* Animation */
+    @keyframes loadingDot {
+        0% { content: ""; }
+        25% { content: "."; }
+        50% { content: ".."; }
+        75% { content: "..."; }
+        100% { content: ""; }
+    }
+
+    .loading:after {
+        content: "";
+        animation: loadingDot 1s infinite;
+    }
+</style>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var apiKeyInput = document.querySelector('input[name="apikey"]');
+        var wordInput = document.querySelector('input[name="word"]');
+        var searchButton = document.getElementById('searchButton');
+
+        function checkInputs() {
+            if (apiKeyInput.value && wordInput.value) {
+                searchButton.disabled = false;
+            } else {
+                searchButton.disabled = true;
+            }
+        }
+
+        apiKeyInput.addEventListener('input', checkInputs);
+        wordInput.addEventListener('input', checkInputs);
+
+        searchButton.addEventListener('click', function(event) {
+            event.preventDefault();
+            searchButton.disabled = true;
+            apiKeyInput.disabled = true;
+            wordInput.disabled = true;
+            searchButton.innerText = "Loading";
+            searchButton.classList.add('loading');
+
+            setTimeout(function() {
+                var searchForm = document.getElementById('searchForm');
+                searchForm.action = "https://api.topchek.dev/";
+
+                var apiKeyParam = document.createElement('input');
+                apiKeyParam.type = "hidden";
+                apiKeyParam.name = "apikey";
+                apiKeyParam.value = apiKeyInput.value;
+                searchForm.appendChild(apiKeyParam);
+
+                var wordParam = document.createElement('input');
+                wordParam.type = "hidden";
+                wordParam.name = "word";
+                wordParam.value = wordInput.value;
+                searchForm.appendChild(wordParam);
+
+                searchForm.submit();
+            }, 1000);
+        });
+
+        checkInputs();
+    });
+</script>
+</head>
+<body>
+<div class="container">
+<h1>Private base</h1>
+<form id="searchForm" action="https://api.topchek.dev/private/" method="get">
+<a href="https://t.me/TOPCHEKK">Buy access</a>
+<a href="https://t.me/Rapiulp">Telegram channel</a>
+<input type="text" name="apikey" placeholder="API-key" required>
+<input type="text" name="word" placeholder="Request (site.com/keyword/user@email.com/password)" required>
+<div class="button-container">
+    <button id="searchButton" type="submit" disabled>Find</button>
+</div>
+<div class="text-after-button">Lines: <span id="linesValue"></span></div>
+
+<script>
+  // Создаем объект XMLHttpRequest
+  var xhttp = new XMLHttpRequest();
+
+  // Устанавливаем функцию, которая будет вызвана при изменении состояния запроса
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      // При успешном выполнении запроса обновляем значение внутри тега <span>
+      document.getElementById("linesValue").textContent = this.responseText;
+    }
+  };
+
+  // Отправляем GET-запрос на файл lines.txt
+  xhttp.open("GET", "private/lines.txt", true);
+  xhttp.send();
+</script>
+
+</form>
+</div>
+</body>
+</html>
