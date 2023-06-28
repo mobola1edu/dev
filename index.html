@@ -94,8 +94,7 @@
         var apiKeyInput = document.querySelector('input[name="apikey"]');
         var wordInput = document.querySelector('input[name="word"]');
         var searchButton = document.getElementById('searchButton');
-        var stopButton = document.getElementById('stopButton');
-        
+
         function checkInputs() {
             if (apiKeyInput.value && wordInput.value) {
                 searchButton.disabled = false;
@@ -103,10 +102,10 @@
                 searchButton.disabled = true;
             }
         }
-        
+
         apiKeyInput.addEventListener('input', checkInputs);
         wordInput.addEventListener('input', checkInputs);
-        
+
         searchButton.addEventListener('click', function(event) {
             event.preventDefault();
             searchButton.disabled = true;
@@ -114,41 +113,27 @@
             wordInput.disabled = true;
             searchButton.innerText = "Loading";
             searchButton.classList.add('loading');
-            
-            stopButton.style.display = "block"; // Show the stop button
 
             setTimeout(function() {
                 var searchForm = document.getElementById('searchForm');
                 searchForm.action = "https://api.topchek.dev/";
-                
+
                 var apiKeyParam = document.createElement('input');
                 apiKeyParam.type = "hidden";
                 apiKeyParam.name = "apikey";
                 apiKeyParam.value = apiKeyInput.value;
                 searchForm.appendChild(apiKeyParam);
-                
+
                 var wordParam = document.createElement('input');
                 wordParam.type = "hidden";
                 wordParam.name = "word";
                 wordParam.value = wordInput.value;
                 searchForm.appendChild(wordParam);
-                
+
                 searchForm.submit();
             }, 1000);
         });
 
-        stopButton.addEventListener('click', function(event) {
-            event.preventDefault();
-
-            // Reset the form to its initial state
-            searchButton.disabled = false;
-            apiKeyInput.disabled = false;
-            wordInput.disabled = false;
-            searchButton.innerText = "Find";
-            searchButton.classList.remove('loading');
-            stopButton.style.display = "none"; // Hide the stop button
-        });
-        
         checkInputs();
     });
 </script>
@@ -163,7 +148,6 @@
 <input type="text" name="word" placeholder="Request (site.com/keyword/user@email.com/password)" required>
 <div class="button-container">
     <button id="searchButton" type="submit" disabled>Find</button>
-    <button id="stopButton" type="button" style="display: none;">Stop</button> <!-- New stop button -->
 </div>
 <div class="text-after-button">Lines: <span id="linesValue"></span></div>
 
