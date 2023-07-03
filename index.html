@@ -27,6 +27,7 @@
         font-size: 1.5rem;
         margin-bottom: 20px;
         width: 100%;
+        box-sizing: border-box;
     }
 
     a {
@@ -88,6 +89,10 @@
         content: "";
         animation: loadingDot 1s infinite;
     }
+
+    .description {
+    margin-top: -40px;  /* Adjust this value to your liking */
+}
 </style>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -140,9 +145,9 @@
 </head>
 <body>
 <div class="container">
-<h1>Public base</h1>
+<h1>Resolve API</h1>
+<p class="description">url:login:pass</p>
 <form id="searchForm" action="https://api.topchek.dev/" method="get">
-<a href="/private">Private base</a>
 <a href="https://t.me/TOPCHEKK">Buy access</a>
 <a href="https://t.me/Rapiulp">Telegram channel</a>
 <input type="text" name="apikey" placeholder="API-key" required>
